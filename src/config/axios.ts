@@ -11,7 +11,11 @@ const createAxiosInstance = () : AxiosInstance => {
 const setupInterceptors = (httpClient: AxiosInstance) => {
     httpClient.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
-            config.headers["Content-Type"] = "application/json";
+            if (config.data instanceof FormData) {
+                delete config.headers["Content-Type"];
+            } else if (!config.headers["Content-Type"]) {
+                config.headers["Content-Type"] = "application/json";
+            }
             const { jwt } = useAuthStore.getState();
             if (jwt) {
                 config.headers['Authorization'] = `Bearer ${jwt}`;

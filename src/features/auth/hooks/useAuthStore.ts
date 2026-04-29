@@ -5,39 +5,36 @@ import type { SuccessPostAuth } from "../models/response/success-post-auth";
 
 type AuthStore = {
     jwt: string | null;
-    role: string | null;
     userId: number | null;
-    employeeId: number | null;
     username: string | null;
-    email: string | null;
+    role: string | null;
+    esAdmin: boolean;
     expiresJwt: number | null;
     isAuthenticated: boolean;
-    setAuthUser: (data: SuccessPostAuth) => void;
+    setAuthUser: (data: SuccessPostAuth, username: string) => void;
     clearAuthUser: () => void;
-}
+    isExpired: () => boolean;
+};
 
 export const useAuthStore = create<AuthStore>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             jwt: null,
-            role: null,
             userId: null,
-            employeeId: null,
             username: null,
-            email: null,
+            role: null,
+            esAdmin: false,
             expiresJwt: null,
             isAuthenticated: false,
-            setAuthUser: (data: SuccessPostAuth) => {
-                const decoded = jwtDecoder(data.jwt);
-                const expirationTime = Date.now() + data.expiresJwtIn;
-                
+            setAuthUser: (data, username) => {
+                const decoded = jwtDecoder(data.token);
+                const expirationTime = Date.now() + data.expiresIn * 1000;
                 set({
-                    jwt: data.jwt,
-                    role: decoded.role,
-                    userId: decoded.id,
-                    employeeId: data.info.data.employeeId,
-                    username: decoded.sub,
-                    email: data.info.data.email,
+                    jwt: data.token,
+                    userId: decoded.userId,
+                    username,
+                    role: data.esAdmin ? "ADMIN" : "USER",
+                    esAdmin: data.esAdmin,
                     expiresJwt: expirationTime,
                     isAuthenticated: true,
                 });
@@ -45,19 +42,22 @@ export const useAuthStore = create<AuthStore>()(
             clearAuthUser: () => {
                 set({
                     jwt: null,
-                    role: null,
                     userId: null,
-                    employeeId: null,
                     username: null,
-                    email: null,
+                    role: null,
+                    esAdmin: false,
                     expiresJwt: null,
                     isAuthenticated: false,
                 });
-            }
+            },
+            isExpired: () => {
+                const exp = get().expiresJwt;
+                return exp == null ? true : Date.now() >= exp;
+            },
         }),
         {
-            name: "auth-storage", 
+            name: "auth-storage",
             storage: createJSONStorage(() => sessionStorage),
-        }
-    )
+        },
+    ),
 );
