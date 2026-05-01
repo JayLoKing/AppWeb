@@ -1,17 +1,15 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { jwtDecoder } from "../../../config/jwtDecode";
+import { jwtDecode } from "jwt-decode";
 import type { SuccessPostAuth } from "../models/response/success-post-auth";
 
 type AuthStore = {
     jwt: string | null;
     role: string | null;
-    userId: number | null;
-    employeeId: number | null;
     username: string | null;
-    email: string | null;
     expiresJwt: number | null;
     isAuthenticated: boolean;
+    esAdmin: boolean;
     setAuthUser: (data: SuccessPostAuth) => void;
     clearAuthUser: () => void;
 }
@@ -21,24 +19,24 @@ export const useAuthStore = create<AuthStore>()(
         (set) => ({
             jwt: null,
             role: null,
-            userId: null,
-            employeeId: null,
             username: null,
-            email: null,
             expiresJwt: null,
             isAuthenticated: false,
+            esAdmin: false,
             setAuthUser: (data: SuccessPostAuth) => {
-                const decoded = jwtDecoder(data.jwt);
-                const expirationTime = Date.now() + data.expiresJwtIn;
-                
+                let username: string | null = null;
+                try {
+                    const decoded = jwtDecode<{ sub?: string }>(data.token);
+                    username = decoded.sub ?? null;
+                } catch {
+                    // token decode failed, username stays null
+                }
                 set({
-                    jwt: data.jwt,
-                    role: decoded.role,
-                    userId: decoded.id,
-                    employeeId: data.info.data.employeeId,
-                    username: decoded.sub,
-                    email: data.info.data.email,
-                    expiresJwt: expirationTime,
+                    jwt: data.token,
+                    role: data.esAdmin ? "ADMIN" : "USER",
+                    esAdmin: data.esAdmin,
+                    username,
+                    expiresJwt: Date.now() + data.expiresIn * 1000,
                     isAuthenticated: true,
                 });
             },
@@ -46,17 +44,15 @@ export const useAuthStore = create<AuthStore>()(
                 set({
                     jwt: null,
                     role: null,
-                    userId: null,
-                    employeeId: null,
                     username: null,
-                    email: null,
                     expiresJwt: null,
                     isAuthenticated: false,
+                    esAdmin: false,
                 });
-            }
+            },
         }),
         {
-            name: "auth-storage", 
+            name: "auth-storage",
             storage: createJSONStorage(() => sessionStorage),
         }
     )

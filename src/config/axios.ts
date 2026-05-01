@@ -2,7 +2,7 @@ import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axio
 import axios from "axios";
 import { useAuthStore } from "../features/auth/hooks/useAuthStore";
 
-const baseURL:string = "http://localhost:8080/api";
+const baseURL:string = "http://localhost:8080/api/v1";
 
 const createAxiosInstance = () : AxiosInstance => {
     return axios.create({baseURL});

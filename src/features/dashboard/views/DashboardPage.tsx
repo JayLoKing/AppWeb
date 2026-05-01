@@ -5,32 +5,30 @@ import { FiltersBar } from "../components/FiltersBar";
 import { RRVvsOficialChart } from "../components/RRVvsOficialChart";
 import { GeograficoPanel } from "../components/GeograficoPanel";
 import { TecnicoPanel } from "../components/TecnicoPanel";
+import { ParticipacionPanel } from "../components/ParticipacionPanel";
 
 export const DashboardPage = () => {
     return (
         <div className="p-8">
             <div className="max-w-7xl mx-auto space-y-8">
-                {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Cómputo Electoral</h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">Visión general y comparación RRV vs Oficial</p>
+                        <p className="text-gray-500 dark:text-gray-400 mt-1">Comparación RRV vs Oficial en tiempo real</p>
                     </div>
                 </div>
 
-                {/* Filters */}
                 <FiltersBar />
 
-                {/* KPIs */}
                 <KPICards />
 
-                {/* Charts Area */}
+                <ParticipacionPanel />
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <VotosCandidatoChart />
                     <RRVvsOficialChart />
                 </div>
 
-                {/* Secondary Panels Area */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2">
                         <InconsistenciasTable />

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../hooks/useAuthStore";
+import { httpClient } from "../../../config/axios";
 import { Lock, User } from "lucide-react";
+import type { SuccessPostAuth } from "../models/response/success-post-auth";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -9,21 +11,24 @@ export const LoginPage = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // Simulate an API call
-        setTimeout(() => {
-            // Mock authentication data
-            setAuthUser({
-                jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwbWVuZGV6Iiwicm9sZSI6IkFETUlOIiwiaWQiOjEyMywiZW1haWwiOiJwbWVuZGV6QG1vY2suY29tIn0.mockSignature",
-                expiresJwtIn: 3600000,
-                info: { data: { employeeId: 456, email: "pmendez@mock.com" } }
+        setError(null);
+        try {
+            const res = await httpClient.post<SuccessPostAuth>("/auth/login", {
+                usuario: username,
+                contrasena: password,
             });
-            setLoading(false);
+            setAuthUser(res.data);
             navigate("/dashboard");
-        }, 1000);
+        } catch {
+            setError("Credenciales incorrectas. Verifica tu usuario y contraseña.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -38,13 +43,19 @@ export const LoginPage = () => {
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-6">
+                    {error && (
+                        <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-400">
+                            {error}
+                        </div>
+                    )}
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Usuario</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <User size={18} className="text-gray-400" />
                             </div>
-                            <input 
+                            <input
                                 type="text"
                                 required
                                 value={username}
@@ -61,7 +72,7 @@ export const LoginPage = () => {
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Lock size={18} className="text-gray-400" />
                             </div>
-                            <input 
+                            <input
                                 type="password"
                                 required
                                 value={password}
@@ -72,10 +83,10 @@ export const LoginPage = () => {
                         </div>
                     </div>
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={loading}
-                        className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none flex justify-center items-center gap-2"
+                        className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none flex justify-center items-center gap-2 disabled:opacity-70"
                     >
                         {loading ? <span className="animate-pulse">Verificando...</span> : "Ingresar al Sistema"}
                     </button>
