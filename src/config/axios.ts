@@ -2,32 +2,47 @@ import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axio
 import axios from "axios";
 import { useAuthStore } from "../features/auth/hooks/useAuthStore";
 
-const baseURL:string = "http://localhost:8080/api";
+const baseURL: string =
+    (import.meta.env.VITE_API_URL as string | undefined) ??
+    "http://localhost:8080/api/v1";
 
-const createAxiosInstance = () : AxiosInstance => {
-    return axios.create({baseURL});
-}
+const createAxiosInstance = (): AxiosInstance => {
+    return axios.create({ baseURL });
+};
 
 const setupInterceptors = (httpClient: AxiosInstance) => {
     httpClient.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
-            config.headers["Content-Type"] = "application/json";
+            if (!config.headers["Content-Type"]) {
+                config.headers["Content-Type"] = "application/json";
+            }
             const { jwt } = useAuthStore.getState();
             if (jwt) {
-                config.headers['Authorization'] = `Bearer ${jwt}`;
+                config.headers["Authorization"] = `Bearer ${jwt}`;
             }
             return config;
         },
-        (error: AxiosError) => {
-            return Promise.reject(error);
-        }
+        (error: AxiosError) => Promise.reject(error),
     );
-}
 
-const initAxios = () : AxiosInstance => {
+    httpClient.interceptors.response.use(
+        (response) => response,
+        (error: AxiosError) => {
+            if (error.response?.status === 401) {
+                useAuthStore.getState().clearAuthUser();
+                if (typeof window !== "undefined" && !window.location.pathname.startsWith("/auth")) {
+                    window.location.href = "/auth/login";
+                }
+            }
+            return Promise.reject(error);
+        },
+    );
+};
+
+const initAxios = (): AxiosInstance => {
     const httpClient = createAxiosInstance();
     setupInterceptors(httpClient);
     return httpClient;
-}
+};
 
 export const httpClient: AxiosInstance = initAxios();

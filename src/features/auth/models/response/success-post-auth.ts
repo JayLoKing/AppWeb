@@ -1,10 +1,10 @@
+export interface LoginResponse {
+    token: string;
+    expiresIn: number;
+    esAdmin: boolean;
+}
+
 export interface SuccessPostAuth {
-    jwt: string;
-    expiresJwtIn: number;
-    info: {
-        data: {
-            employeeId: number;
-            email: string;
-        }
-    };
+    response: LoginResponse;
+    username: string;
 }

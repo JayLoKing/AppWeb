@@ -1,29 +1,39 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../hooks/useAuthStore";
-import { Lock, User } from "lucide-react";
+import { authService } from "../services/authService";
+import { Lock, User, AlertCircle } from "lucide-react";
+import axios from "axios";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
     const { setAuthUser } = useAuthStore();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("admin");
+    const [password, setPassword] = useState("admin123");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // Simulate an API call
-        setTimeout(() => {
-            // Mock authentication data
-            setAuthUser({
-                jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwbWVuZGV6Iiwicm9sZSI6IkFETUlOIiwiaWQiOjEyMywiZW1haWwiOiJwbWVuZGV6QG1vY2suY29tIn0.mockSignature",
-                expiresJwtIn: 3600000,
-                info: { data: { employeeId: 456, email: "pmendez@mock.com" } }
+        setError(null);
+        try {
+            const response = await authService.login({
+                usuario: username,
+                contrasena: password,
             });
-            setLoading(false);
+            setAuthUser({ response, username });
             navigate("/dashboard");
-        }, 1000);
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                const apiMsg = (err.response?.data as { error?: string })?.error;
+                setError(apiMsg ?? "No se pudo iniciar sesión. Verifica que la API esté disponible.");
+            } else {
+                setError("Error inesperado al iniciar sesión.");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -44,7 +54,7 @@ export const LoginPage = () => {
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <User size={18} className="text-gray-400" />
                             </div>
-                            <input 
+                            <input
                                 type="text"
                                 required
                                 value={username}
@@ -61,7 +71,7 @@ export const LoginPage = () => {
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Lock size={18} className="text-gray-400" />
                             </div>
-                            <input 
+                            <input
                                 type="password"
                                 required
                                 value={password}
@@ -72,10 +82,17 @@ export const LoginPage = () => {
                         </div>
                     </div>
 
-                    <button 
-                        type="submit" 
+                    {error && (
+                        <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm dark:bg-red-900/20 dark:border-red-800 dark:text-red-300">
+                            <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                            <span>{error}</span>
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
                         disabled={loading}
-                        className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none flex justify-center items-center gap-2"
+                        className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none flex justify-center items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                         {loading ? <span className="animate-pulse">Verificando...</span> : "Ingresar al Sistema"}
                     </button>

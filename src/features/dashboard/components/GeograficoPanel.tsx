@@ -4,12 +4,8 @@ import { MapPin } from "lucide-react";
 
 export const GeograficoPanel = () => {
     const { data, isLoading } = useQuery({
-        queryKey: ['geografico'],
-        queryFn: async () => {
-            const { call } = dashboardService.getGeografico();
-            const res = await call;
-            return res.data;
-        }
+        queryKey: ["geografico"],
+        queryFn: () => dashboardService.getGeografico("departamento"),
     });
 
     if (isLoading) return <div className="h-48 bg-gray-100 rounded-xl animate-pulse"></div>;
@@ -22,14 +18,22 @@ export const GeograficoPanel = () => {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Avance Geográfico</h3>
             </div>
             <div className="space-y-4">
+                {data.length === 0 && (
+                    <p className="text-sm text-gray-400">Sin datos geográficos disponibles.</p>
+                )}
                 {data.map((item) => (
                     <div key={item.id}>
                         <div className="flex justify-between text-sm mb-1">
                             <span className="font-medium text-gray-700 dark:text-gray-300">{item.departamento}</span>
-                            <span className="text-gray-500 dark:text-gray-400">{item.avance}% ({item.actasComputadas} actas)</span>
+                            <span className="text-gray-500 dark:text-gray-400">
+                                {item.avance}% ({item.actasComputadas} actas)
+                            </span>
                         </div>
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div className="bg-blue-600 dark:bg-blue-500 h-2.5 rounded-full" style={{ width: `${item.avance}%` }}></div>
+                            <div
+                                className="bg-blue-600 dark:bg-blue-500 h-2.5 rounded-full"
+                                style={{ width: `${item.avance}%` }}
+                            ></div>
                         </div>
                     </div>
                 ))}
