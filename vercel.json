@@ -3,6 +3,9 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": null,
+  "rewrites": [
+    { "source": "/((?!assets/|favicon\\.ico|.*\\.(?:js|css|png|jpg|jpeg|svg|webp|gif|ico|woff2?|ttf|map)).*)", "destination": "/index.html" }
+  ],
   "git": {
     "deploymentEnabled": {
       "hosting": true
