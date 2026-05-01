@@ -15,7 +15,12 @@ export const routesConfig = [
         children: [
             { index: true, element: <Navigate to="login" replace /> },
             { path: "login", element: <LoginPage /> },
-        ]
+        ],
+    },
+    // Ruta pública e independiente del MainLayout
+    {
+        path: "/scanner",
+        element: <ScannerPage />,
     },
     {
         element: <PrivateRoutes />,
@@ -25,13 +30,12 @@ export const routesConfig = [
                 element: <MainLayout />,
                 children: [
                     { path: "dashboard", element: <DashboardPage /> },
-                    { path: "scanner", element: <ScannerPage /> },
-                ]
-            }
-        ]
+                ],
+            },
+        ],
     },
     {
         path: "*",
-        element: <Navigate to="/dashboard" replace />
-    }
+        element: <Navigate to="/dashboard" replace />,
+    },
 ];
