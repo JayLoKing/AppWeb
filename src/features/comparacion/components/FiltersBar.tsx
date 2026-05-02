@@ -1,4 +1,5 @@
 import type { ComparacionListParams } from "../services/comparacionService";
+import { DEPARTAMENTOS, getMunicipiosByDepartamento } from "../data/territorios";
 
 const ESTADOS = ["", "CONSISTENTE", "INCONSISTENTE", "SOLO_RRV", "SOLO_OFICIAL"] as const;
 const PER_PAGE = [10, 20, 50, 100];
@@ -11,16 +12,30 @@ interface Props {
 }
 
 export const FiltersBar = ({ filters, onChange, onApply, onClear }: Props) => {
-    const set = <K extends keyof ComparacionListParams>(key: K) =>
-        (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-            onChange({ ...filters, [key]: e.target.value, pagina: 1 });
+    const handleEstado = (e: React.ChangeEvent<HTMLSelectElement>) =>
+        onChange({ ...filters, estado: e.target.value, pagina: 1 });
+
+    const handleDepto = (e: React.ChangeEvent<HTMLSelectElement>) =>
+        // Al cambiar departamento, limpiar municipio (cascada)
+        onChange({ ...filters, departamento: e.target.value, municipio: "", pagina: 1 });
+
+    const handleMunicipio = (e: React.ChangeEvent<HTMLSelectElement>) =>
+        onChange({ ...filters, municipio: e.target.value, pagina: 1 });
+
+    const handleRecinto = (e: React.ChangeEvent<HTMLInputElement>) =>
+        onChange({ ...filters, recinto: e.target.value, pagina: 1 });
+
+    const handlePerPage = (e: React.ChangeEvent<HTMLSelectElement>) =>
+        onChange({ ...filters, por_pagina: Number(e.target.value), pagina: 1 });
+
+    const municipios = getMunicipiosByDepartamento(filters.departamento ?? "");
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-wrap gap-3 items-end mb-4">
             <Field label="Estado">
                 <select
                     value={filters.estado ?? ""}
-                    onChange={set("estado")}
+                    onChange={handleEstado}
                     className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 min-w-36"
                 >
                     {ESTADOS.map((e) => (
@@ -32,27 +47,40 @@ export const FiltersBar = ({ filters, onChange, onApply, onClear }: Props) => {
             </Field>
 
             <Field label="Departamento">
-                <input
+                <select
                     value={filters.departamento ?? ""}
-                    onChange={set("departamento")}
-                    placeholder="Ej. La Paz"
-                    className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 min-w-36"
-                />
+                    onChange={handleDepto}
+                    className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 min-w-44"
+                >
+                    <option value="">Todos</option>
+                    {DEPARTAMENTOS.map((d) => (
+                        <option key={d} value={d}>
+                            {d}
+                        </option>
+                    ))}
+                </select>
             </Field>
 
             <Field label="Municipio">
-                <input
+                <select
                     value={filters.municipio ?? ""}
-                    onChange={set("municipio")}
-                    placeholder="Ej. El Alto"
-                    className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 min-w-36"
-                />
+                    onChange={handleMunicipio}
+                    disabled={!filters.departamento}
+                    className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 min-w-44 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <option value="">{filters.departamento ? "Todos" : "Selecciona depto."}</option>
+                    {municipios.map((m) => (
+                        <option key={m} value={m}>
+                            {m}
+                        </option>
+                    ))}
+                </select>
             </Field>
 
             <Field label="Recinto">
                 <input
                     value={filters.recinto ?? ""}
-                    onChange={set("recinto")}
+                    onChange={handleRecinto}
                     placeholder="Ej. Colegio Ayacucho"
                     className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 min-w-44"
                 />
@@ -61,7 +89,7 @@ export const FiltersBar = ({ filters, onChange, onApply, onClear }: Props) => {
             <Field label="Resultados por página">
                 <select
                     value={filters.por_pagina ?? 20}
-                    onChange={set("por_pagina")}
+                    onChange={handlePerPage}
                     className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 min-w-24"
                 >
                     {PER_PAGE.map((n) => (
