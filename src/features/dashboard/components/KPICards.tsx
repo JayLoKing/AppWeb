@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import CountUp from "react-countup";
 import { dashboardService, type ResumenComparacion } from "../services/dashboardService";
 
@@ -22,7 +22,7 @@ const CARDS: CardConfig[] = [
     { key: "diferencia_total_votos", label: "Diferencia Total Votos", border: "border-purple-500", valueColor: "text-purple-500" },
 ];
 
-const container = {
+const container: Variants = {
     hidden: { opacity: 0 },
     show: {
         opacity: 1,
@@ -30,9 +30,9 @@ const container = {
     },
 };
 
-const item = {
+const item: Variants = {
     hidden: { opacity: 0, y: 12 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const } },
 };
 
 export const KPICards = () => {
