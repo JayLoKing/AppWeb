@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Sector } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { AnimatedCard } from "../../../components/AnimatedCard";
 
 const COLOR_BY_LABEL: Record<string, string> = {
@@ -10,30 +10,6 @@ const COLOR_BY_LABEL: Record<string, string> = {
     "Solo Oficial": "#94a3b8",
 };
 const FALLBACK_COLORS = ["#22c55e", "#ef4444", "#f97316", "#94a3b8"];
-
-// Sector con efecto pop al hacer hover
-const renderActiveShape = (props: any) => {
-    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
-    return (
-        <g>
-            <text x={cx} y={cy - 8} textAnchor="middle" className="fill-gray-700 dark:fill-gray-200" style={{ fontSize: 13, fontWeight: 700 }}>
-                {payload.name}
-            </text>
-            <text x={cx} y={cy + 12} textAnchor="middle" className="fill-gray-500 dark:fill-gray-400" style={{ fontSize: 12 }}>
-                {value} ({(percent * 100).toFixed(1)}%)
-            </text>
-            <Sector
-                cx={cx}
-                cy={cy}
-                innerRadius={innerRadius}
-                outerRadius={outerRadius + 8}
-                startAngle={startAngle}
-                endAngle={endAngle}
-                fill={fill}
-            />
-        </g>
-    );
-};
 
 export const RRVvsOficialChart = () => {
     const { data, isLoading } = useQuery({
@@ -66,7 +42,6 @@ export const RRVvsOficialChart = () => {
                             paddingAngle={2}
                             dataKey="value"
                             nameKey="name"
-                            activeShape={renderActiveShape}
                             isAnimationActive
                             animationBegin={150}
                             animationDuration={900}
@@ -76,12 +51,15 @@ export const RRVvsOficialChart = () => {
                                 <Cell
                                     key={entry.name}
                                     fill={COLOR_BY_LABEL[entry.name] ?? FALLBACK_COLORS[idx % FALLBACK_COLORS.length]}
+                                    stroke="#fff"
+                                    strokeWidth={2}
                                 />
                             ))}
                         </Pie>
                         <Tooltip
                             contentStyle={{ backgroundColor: "#1F2937", borderColor: "#374151", color: "#fff", borderRadius: 8 }}
                             itemStyle={{ color: "#E5E7EB" }}
+                            formatter={(value, name) => [`${Number(value).toLocaleString("es-BO")} actas`, name]}
                         />
                         <Legend verticalAlign="bottom" />
                     </PieChart>
