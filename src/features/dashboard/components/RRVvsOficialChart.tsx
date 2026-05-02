@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { dashboardService } from "../services/dashboardService";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { AnimatedCard } from "../../../components/AnimatedCard";
 
 const COLOR_BY_LABEL: Record<string, string> = {
     Consistentes: "#22c55e",
@@ -12,6 +12,7 @@ const COLOR_BY_LABEL: Record<string, string> = {
 const FALLBACK_COLORS = ["#22c55e", "#ef4444", "#f97316", "#94a3b8"];
 
 export const RRVvsOficialChart = () => {
+    const [hovered, setHovered] = useState<number | null>(null);
     const { data, isLoading } = useQuery({
         queryKey: ["rrvVsOficial"],
         queryFn: () => dashboardService.getRRVvsOficial(),
@@ -28,7 +29,7 @@ export const RRVvsOficialChart = () => {
     }));
 
     return (
-        <AnimatedCard className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow h-96 flex flex-col">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">
                 RRV vs Oficial — Distribución de estados
             </h3>
@@ -43,9 +44,10 @@ export const RRVvsOficialChart = () => {
                             dataKey="value"
                             nameKey="name"
                             isAnimationActive
-                            animationBegin={150}
-                            animationDuration={900}
+                            animationDuration={800}
                             animationEasing="ease-out"
+                            onMouseEnter={(_, idx) => setHovered(idx)}
+                            onMouseLeave={() => setHovered(null)}
                         >
                             {chartData.map((entry, idx) => (
                                 <Cell
@@ -53,6 +55,11 @@ export const RRVvsOficialChart = () => {
                                     fill={COLOR_BY_LABEL[entry.name] ?? FALLBACK_COLORS[idx % FALLBACK_COLORS.length]}
                                     stroke="#fff"
                                     strokeWidth={2}
+                                    style={{
+                                        cursor: "pointer",
+                                        opacity: hovered === null || hovered === idx ? 1 : 0.45,
+                                        transition: "opacity 200ms ease",
+                                    }}
                                 />
                             ))}
                         </Pie>
@@ -65,6 +72,6 @@ export const RRVvsOficialChart = () => {
                     </PieChart>
                 </ResponsiveContainer>
             </div>
-        </AnimatedCard>
+        </div>
     );
 };

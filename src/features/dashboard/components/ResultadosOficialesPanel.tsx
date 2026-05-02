@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
-import { AnimatedCard } from "../../../components/AnimatedCard";
 
 const Stat = ({ label, value }: { label: string; value: number | string }) => (
     <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-100 dark:border-gray-700">
@@ -35,7 +34,7 @@ export const ResultadosOficialesPanel = () => {
     const departamentos = (data.porDepartamento ?? []).slice(0, 5);
 
     return (
-        <AnimatedCard className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">
                 Resultados oficiales
             </h3>
@@ -99,6 +98,6 @@ export const ResultadosOficialesPanel = () => {
                     </table>
                 </div>
             )}
-        </AnimatedCard>
+        </div>
     );
 };

@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { RefreshCcw } from "lucide-react";
-import { motion } from "framer-motion";
 import { KPICards } from "../components/KPICards";
 import { VotosCandidatoChart } from "../components/VotosCandidatoChart";
 import { RRVvsOficialChart } from "../components/RRVvsOficialChart";
@@ -21,19 +20,14 @@ export const DashboardPage = () => {
         setRefreshing(true);
         await queryClient.invalidateQueries();
         setLastUpdate(new Date().toLocaleTimeString());
-        setTimeout(() => setRefreshing(false), 800);
+        setTimeout(() => setRefreshing(false), 600);
     };
 
     return (
         <div className="p-6 md:p-8">
             <div className="max-w-7xl mx-auto space-y-5">
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="flex items-center gap-3"
-                >
+                <div className="flex items-center gap-3">
                     <div className="flex-1">
                         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                             Dashboard Electoral
@@ -42,22 +36,14 @@ export const DashboardPage = () => {
                             Actualizado: {lastUpdate}
                         </p>
                     </div>
-                    <motion.button
+                    <button
                         onClick={refresh}
-                        whileTap={{ scale: 0.95 }}
-                        whileHover={{ scale: 1.03 }}
-                        className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                        className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 text-gray-700 dark:text-gray-200 text-sm font-medium px-4 py-2 rounded-lg transition-all"
                     >
-                        <motion.span
-                            animate={refreshing ? { rotate: 360 } : { rotate: 0 }}
-                            transition={refreshing ? { duration: 0.8, ease: "linear", repeat: Infinity } : { duration: 0.2 }}
-                            className="inline-flex"
-                        >
-                            <RefreshCcw size={14} />
-                        </motion.span>
+                        <RefreshCcw size={14} className={refreshing ? "animate-spin" : ""} />
                         Actualizar
-                    </motion.button>
-                </motion.div>
+                    </button>
+                </div>
 
                 {/* KPIs */}
                 <KPICards />

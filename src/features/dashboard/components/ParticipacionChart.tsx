@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { AnimatedCard } from "../../../components/AnimatedCard";
 
 export const ParticipacionChart = () => {
     const { data, isLoading } = useQuery({
@@ -14,7 +13,7 @@ export const ParticipacionChart = () => {
     if (!data) return null;
 
     return (
-        <AnimatedCard className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow h-96 flex flex-col">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Participación electoral</h3>
             {!data.available ? (
                 <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm text-gray-500 dark:text-gray-400">
@@ -45,14 +44,12 @@ export const ParticipacionChart = () => {
                                 fill="#3b82f6"
                                 radius={[6, 6, 0, 0]}
                                 isAnimationActive
-                                animationBegin={150}
-                                animationDuration={1000}
-                                animationEasing="ease-out"
+                                animationDuration={900}
                             />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
             )}
-        </AnimatedCard>
+        </div>
     );
 };

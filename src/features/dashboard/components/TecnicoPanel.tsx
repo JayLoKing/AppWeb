@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
-import { AnimatedCard } from "../../../components/AnimatedCard";
 
 const Item = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg px-4 py-3 border border-gray-100 dark:border-gray-700">
@@ -31,10 +30,7 @@ export const TecnicoPanel = () => {
     const mgOk = data.fuentes?.mongodb?.estado === "connected";
 
     return (
-        <AnimatedCard
-            delay={0.1}
-            className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
-        >
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">
                 Estado técnico del sistema
             </h3>
@@ -76,6 +72,6 @@ export const TecnicoPanel = () => {
                         : "No disponible"}
                 </Item>
             </div>
-        </AnimatedCard>
+        </div>
     );
 };

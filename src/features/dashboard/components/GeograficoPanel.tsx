@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
 import { useState } from "react";
-import { AnimatedCard } from "../../../components/AnimatedCard";
 
 type GroupBy = "departamento" | "municipio" | "recinto";
 
@@ -22,7 +21,7 @@ export const GeograficoPanel = () => {
     });
 
     return (
-        <AnimatedCard className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4 gap-3">
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white">
                     Distribución geográfica
@@ -60,7 +59,7 @@ export const GeograficoPanel = () => {
                         </thead>
                         <tbody>
                             {data.items.map((item, i) => (
-                                <tr key={i} className="border-t border-gray-100 dark:border-gray-700">
+                                <tr key={i} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors">
                                     <td className="px-3 py-2 font-semibold text-gray-900 dark:text-white">
                                         {item.nombre}
                                     </td>
@@ -88,6 +87,6 @@ export const GeograficoPanel = () => {
                     </table>
                 </div>
             )}
-        </AnimatedCard>
+        </div>
     );
 };

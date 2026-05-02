@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
-import { AnimatedCard } from "../../../components/AnimatedCard";
 
 export const EventosRRVPanel = () => {
     const { data, isLoading } = useQuery({
@@ -16,7 +15,7 @@ export const EventosRRVPanel = () => {
     const coleccion = data?.coleccion ?? "rrv_eventos";
 
     return (
-        <AnimatedCard className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">Eventos RRV</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
                 {total} eventos en {coleccion}
@@ -57,6 +56,6 @@ export const EventosRRVPanel = () => {
                     </table>
                 </div>
             )}
-        </AnimatedCard>
+        </div>
     );
 };
