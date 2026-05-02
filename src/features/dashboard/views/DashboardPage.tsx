@@ -8,6 +8,9 @@ import { RRVvsOficialChart } from "../components/RRVvsOficialChart";
 import { GeograficoPanel } from "../components/GeograficoPanel";
 import { TecnicoPanel } from "../components/TecnicoPanel";
 import { ParticipacionChart } from "../components/ParticipacionChart";
+import { ResultadosOficialesPanel } from "../components/ResultadosOficialesPanel";
+import { AuditoriaOficialPanel } from "../components/AuditoriaOficialPanel";
+import { EventosRRVPanel } from "../components/EventosRRVPanel";
 
 export const DashboardPage = () => {
     const queryClient = useQueryClient();
@@ -56,6 +59,15 @@ export const DashboardPage = () => {
 
                 {/* Geográfico full width */}
                 <GeograficoPanel />
+
+                {/* Resultados oficiales + Auditoría oficial */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <ResultadosOficialesPanel />
+                    <AuditoriaOficialPanel />
+                </div>
+
+                {/* Eventos RRV full width */}
+                <EventosRRVPanel />
 
                 {/* Inconsistencias full width */}
                 <InconsistenciasTable />

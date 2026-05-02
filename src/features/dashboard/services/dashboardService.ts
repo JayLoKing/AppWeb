@@ -81,6 +81,36 @@ export interface ParticipacionResponse {
     raw?: { total_habilitados: number; total_votos: number };
 }
 
+export interface ResultadosOficialesResponse {
+    resumen?: {
+        totalActas?: number;
+        actasTranscritas?: number;
+        actasObservadas?: number;
+    };
+    comparativa?: { candidato: string; votos: number }[];
+    porDepartamento?: { ubicacion: string; totalActas: number; votosValidos: number }[];
+}
+
+export interface AuditoriaOficialResponse {
+    total?: number;
+    actas?: {
+        id?: string | number;
+        codigoActa: string;
+        estado: string;
+        observaciones?: string;
+    }[];
+}
+
+export interface EventosRRVResponse {
+    total_eventos?: number;
+    coleccion?: string;
+    eventos?: {
+        tipo_evento: string;
+        acta_id?: string;
+        fecha_evento?: string;
+    }[];
+}
+
 // ─── Llamadas reales (devuelven el payload tal cual viene del backend) ────
 
 export const dashboardService = {
@@ -106,4 +136,13 @@ export const dashboardService = {
 
     getInconsistencias: (): Promise<InconsistenciasResponse> =>
         httpClient.get<InconsistenciasResponse>("/dashboard/inconsistencias").then((r) => r.data),
+
+    getEventosRRV: (): Promise<EventosRRVResponse> =>
+        httpClient.get<EventosRRVResponse>("/dashboard/eventos-rrv").then((r) => r.data),
+
+    getResultadosOficiales: (): Promise<ResultadosOficialesResponse> =>
+        httpClient.get<ResultadosOficialesResponse>("/resultados").then((r) => r.data),
+
+    getAuditoriaOficial: (): Promise<AuditoriaOficialResponse> =>
+        httpClient.get<AuditoriaOficialResponse>("/auditoria").then((r) => r.data),
 };
