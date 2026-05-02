@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 import { dashboardService } from "../services/dashboardService";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Sector } from "recharts";
 import { AnimatedCard } from "../../../components/AnimatedCard";
@@ -37,7 +36,6 @@ const renderActiveShape = (props: any) => {
 };
 
 export const RRVvsOficialChart = () => {
-    const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
     const { data, isLoading } = useQuery({
         queryKey: ["rrvVsOficial"],
         queryFn: () => dashboardService.getRRVvsOficial(),
@@ -68,10 +66,7 @@ export const RRVvsOficialChart = () => {
                             paddingAngle={2}
                             dataKey="value"
                             nameKey="name"
-                            activeIndex={activeIndex}
                             activeShape={renderActiveShape}
-                            onMouseEnter={(_, idx) => setActiveIndex(idx)}
-                            onMouseLeave={() => setActiveIndex(undefined)}
                             isAnimationActive
                             animationBegin={150}
                             animationDuration={900}
