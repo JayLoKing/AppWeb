@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { AnimatedCard } from "../../../components/AnimatedCard";
 
 export const VotosCandidatoChart = () => {
     const { data, isLoading } = useQuery({
@@ -23,7 +24,10 @@ export const VotosCandidatoChart = () => {
     const todosEnCero = chartData.every((d) => d.RRV === 0 && d.Oficial === 0);
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col">
+        <AnimatedCard
+            delay={0.1}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col"
+        >
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
                 Votos por candidato — RRV vs Oficial
             </h3>
@@ -39,15 +43,32 @@ export const VotosCandidatoChart = () => {
                         <XAxis dataKey="candidato" stroke="#6b7280" fontSize={12} />
                         <YAxis stroke="#6b7280" fontSize={12} />
                         <Tooltip
+                            cursor={{ fill: "rgba(99, 102, 241, 0.08)" }}
                             contentStyle={{ backgroundColor: "#1F2937", borderColor: "#374151", color: "#fff", borderRadius: 8 }}
                             itemStyle={{ color: "#E5E7EB" }}
                         />
                         <Legend />
-                        <Bar dataKey="RRV" fill="#f97316" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="Oficial" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        <Bar
+                            dataKey="RRV"
+                            fill="#f97316"
+                            radius={[6, 6, 0, 0]}
+                            isAnimationActive
+                            animationBegin={150}
+                            animationDuration={900}
+                            animationEasing="ease-out"
+                        />
+                        <Bar
+                            dataKey="Oficial"
+                            fill="#3b82f6"
+                            radius={[6, 6, 0, 0]}
+                            isAnimationActive
+                            animationBegin={300}
+                            animationDuration={900}
+                            animationEasing="ease-out"
+                        />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
-        </div>
+        </AnimatedCard>
     );
 };

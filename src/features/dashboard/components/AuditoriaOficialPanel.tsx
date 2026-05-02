@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import CountUp from "react-countup";
 import { dashboardService } from "../services/dashboardService";
+import { AnimatedCard } from "../../../components/AnimatedCard";
 
 export const AuditoriaOficialPanel = () => {
     const { data, isLoading } = useQuery({
@@ -14,13 +16,18 @@ export const AuditoriaOficialPanel = () => {
     const total = data?.total ?? actas.length;
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <AnimatedCard
+            delay={0.1}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
+        >
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">
                 Auditoría oficial
             </h3>
 
             <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-3xl font-extrabold text-red-500">{total}</span>
+                <span className="text-3xl font-extrabold text-red-500">
+                    <CountUp end={total} duration={1.4} separator="." preserveValue />
+                </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">actas observadas</span>
             </div>
 
@@ -57,6 +64,6 @@ export const AuditoriaOficialPanel = () => {
                     </table>
                 </div>
             )}
-        </div>
+        </AnimatedCard>
     );
 };

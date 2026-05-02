@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { dashboardService } from "../services/dashboardService";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Sector } from "recharts";
+import { AnimatedCard } from "../../../components/AnimatedCard";
 
 const COLOR_BY_LABEL: Record<string, string> = {
     Consistentes: "#22c55e",
@@ -8,10 +10,34 @@ const COLOR_BY_LABEL: Record<string, string> = {
     "Solo RRV": "#f97316",
     "Solo Oficial": "#94a3b8",
 };
-
 const FALLBACK_COLORS = ["#22c55e", "#ef4444", "#f97316", "#94a3b8"];
 
+// Sector con efecto pop al hacer hover
+const renderActiveShape = (props: any) => {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+    return (
+        <g>
+            <text x={cx} y={cy - 8} textAnchor="middle" className="fill-gray-700 dark:fill-gray-200" style={{ fontSize: 13, fontWeight: 700 }}>
+                {payload.name}
+            </text>
+            <text x={cx} y={cy + 12} textAnchor="middle" className="fill-gray-500 dark:fill-gray-400" style={{ fontSize: 12 }}>
+                {value} ({(percent * 100).toFixed(1)}%)
+            </text>
+            <Sector
+                cx={cx}
+                cy={cy}
+                innerRadius={innerRadius}
+                outerRadius={outerRadius + 8}
+                startAngle={startAngle}
+                endAngle={endAngle}
+                fill={fill}
+            />
+        </g>
+    );
+};
+
 export const RRVvsOficialChart = () => {
+    const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
     const { data, isLoading } = useQuery({
         queryKey: ["rrvVsOficial"],
         queryFn: () => dashboardService.getRRVvsOficial(),
@@ -28,7 +54,7 @@ export const RRVvsOficialChart = () => {
     }));
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col">
+        <AnimatedCard className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">
                 RRV vs Oficial — Distribución de estados
             </h3>
@@ -42,6 +68,14 @@ export const RRVvsOficialChart = () => {
                             paddingAngle={2}
                             dataKey="value"
                             nameKey="name"
+                            activeIndex={activeIndex}
+                            activeShape={renderActiveShape}
+                            onMouseEnter={(_, idx) => setActiveIndex(idx)}
+                            onMouseLeave={() => setActiveIndex(undefined)}
+                            isAnimationActive
+                            animationBegin={150}
+                            animationDuration={900}
+                            animationEasing="ease-out"
                         >
                             {chartData.map((entry, idx) => (
                                 <Cell
@@ -58,6 +92,6 @@ export const RRVvsOficialChart = () => {
                     </PieChart>
                 </ResponsiveContainer>
             </div>
-        </div>
+        </AnimatedCard>
     );
 };
