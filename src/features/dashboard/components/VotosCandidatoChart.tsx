@@ -8,25 +8,43 @@ export const VotosCandidatoChart = () => {
         queryFn: () => dashboardService.getVotosCandidato(),
     });
 
-    if (isLoading) return <div className="h-64 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse"></div>;
+    if (isLoading)
+        return <div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />;
     if (!data) return null;
+
+    const rrvDS = data.datasets.find((d) => d.label.toLowerCase() === "rrv");
+    const ofDS = data.datasets.find((d) => d.label.toLowerCase() === "oficial");
+    const chartData = data.labels.map((label, i) => ({
+        candidato: label,
+        RRV: Number(rrvDS?.data[i] ?? 0),
+        Oficial: Number(ofDS?.data[i] ?? 0),
+    }));
+
+    const todosEnCero = chartData.every((d) => d.RRV === 0 && d.Oficial === 0);
 
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Votos por Candidato (RRV vs Oficial)</h3>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
+                Votos por candidato — RRV vs Oficial
+            </h3>
+            {todosEnCero && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                    Los votos oficiales dependen de la transcripción/carga oficial procesada.
+                </p>
+            )}
             <div className="flex-1 min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
-                        <XAxis dataKey="candidato" stroke="#9CA3AF" />
-                        <YAxis stroke="#9CA3AF" />
+                    <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis dataKey="candidato" stroke="#6b7280" fontSize={12} />
+                        <YAxis stroke="#6b7280" fontSize={12} />
                         <Tooltip
-                            contentStyle={{ backgroundColor: "#1F2937", borderColor: "#374151", color: "#fff", borderRadius: "8px" }}
+                            contentStyle={{ backgroundColor: "#1F2937", borderColor: "#374151", color: "#fff", borderRadius: 8 }}
                             itemStyle={{ color: "#E5E7EB" }}
                         />
-                        <Legend wrapperStyle={{ paddingTop: "20px" }} />
-                        <Bar dataKey="rrv" name="RRV" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="oficial" name="Oficial" fill="#22C55E" radius={[4, 4, 0, 0]} />
+                        <Legend />
+                        <Bar dataKey="RRV" fill="#f97316" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Oficial" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

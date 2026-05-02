@@ -1,75 +1,108 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
 
+const ESTADO_COLOR: Record<string, string> = {
+    CONSISTENTE: "#22c55e",
+    INCONSISTENTE: "#ef4444",
+    SOLO_RRV: "#f97316",
+    SOLO_OFICIAL: "#94a3b8",
+};
+
+const SEVERIDAD_COLOR: Record<string, string> = {
+    ALTA: "#ef4444",
+    MEDIA: "#f97316",
+    BAJA: "#eab308",
+};
+
+const Pill = ({ value, color }: { value: string; color: string }) => (
+    <span
+        className="inline-block px-2 py-0.5 rounded-full text-xs font-bold"
+        style={{ backgroundColor: `${color}20`, color }}
+    >
+        {value}
+    </span>
+);
+
 export const InconsistenciasTable = () => {
     const { data, isLoading } = useQuery({
         queryKey: ["inconsistencias"],
         queryFn: () => dashboardService.getInconsistencias(),
     });
 
-    if (isLoading) return <div className="h-48 bg-gray-100 rounded-xl animate-pulse"></div>;
+    if (isLoading)
+        return <div className="h-64 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />;
     if (!data) return null;
+
+    const rows = data.inconsistencias ?? [];
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Actas Inconsistentes Recientes ({data.length})
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                    Inconsistencias detectadas{" "}
+                    {rows.length > 0 && (
+                        <span className="text-gray-400 font-normal">({rows.length})</span>
+                    )}
                 </h3>
             </div>
             <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                        <tr>
-                            <th className="px-6 py-3">Acta</th>
-                            <th className="px-6 py-3">Departamento</th>
-                            <th className="px-6 py-3">Recinto</th>
-                            <th className="px-6 py-3">Diferencia</th>
-                            <th className="px-6 py-3">Estado</th>
+                <table className="w-full text-sm">
+                    <thead>
+                        <tr className="bg-gray-50 dark:bg-gray-900/50 text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            <th className="px-4 py-3 text-left font-bold">Acta ID</th>
+                            <th className="px-4 py-3 text-left font-bold">Departamento</th>
+                            <th className="px-4 py-3 text-left font-bold">Municipio</th>
+                            <th className="px-4 py-3 text-left font-bold">Recinto</th>
+                            <th className="px-4 py-3 text-left font-bold">Mesa</th>
+                            <th className="px-4 py-3 text-left font-bold">Estado</th>
+                            <th className="px-4 py-3 text-left font-bold">Dif. Votos</th>
+                            <th className="px-4 py-3 text-left font-bold">Severidad</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {data.length === 0 && (
+                        {rows.length === 0 && (
                             <tr>
-                                <td colSpan={5} className="px-6 py-6 text-center text-gray-400">
-                                    Sin inconsistencias detectadas.
+                                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">
+                                    No hay inconsistencias detectadas.
                                 </td>
                             </tr>
                         )}
-                        {data.map((item) => (
-                            <tr
-                                key={item.id}
-                                className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            >
-                                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{item.acta}</td>
-                                <td className="px-6 py-4">{item.departamento}</td>
-                                <td className="px-6 py-4">{item.recinto}</td>
-                                <td className="px-6 py-4">
-                                    <span
-                                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                            item.diferencia > 0
-                                                ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                                                : item.diferencia < 0
-                                                  ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                                                  : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                                        }`}
-                                    >
-                                        {item.diferencia > 0 ? `+${item.diferencia}` : item.diferencia}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span
-                                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                            item.estado === "Resuelto"
-                                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                                : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                                        }`}
-                                    >
-                                        {item.estado}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
+                        {rows.map((row, i) => {
+                            const color = ESTADO_COLOR[row.estado_comparacion] ?? "#888";
+                            const sev = row.inconsistencias?.[0]?.severidad;
+                            const sevColor = sev ? SEVERIDAD_COLOR[sev] : null;
+                            return (
+                                <tr
+                                    key={row.acta_id || i}
+                                    className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/30"
+                                >
+                                    <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">
+                                        {row.acta_id}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                                        {row.departamento || "—"}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                                        {row.municipio || "—"}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                                        {row.recinto || "—"}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                                        {row.mesa || "—"}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <Pill value={row.estado_comparacion} color={color} />
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                                        {row.diferencias?.diferencia_total_votos ?? "—"}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        {sev && sevColor ? <Pill value={sev} color={sevColor} /> : "—"}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
