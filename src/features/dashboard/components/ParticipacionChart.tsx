@@ -35,7 +35,7 @@ export const ParticipacionChart = () => {
                             <Tooltip
                                 contentStyle={{ backgroundColor: "#1F2937", borderColor: "#374151", color: "#fff", borderRadius: 8 }}
                                 itemStyle={{ color: "#E5E7EB" }}
-                                formatter={(v: number) => `${v}%`}
+                                formatter={(value) => `${value}%`}
                             />
                             <Legend />
                             <Bar dataKey="Participación %" fill="#3b82f6" radius={[4, 4, 0, 0]} />
