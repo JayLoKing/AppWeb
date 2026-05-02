@@ -3,7 +3,6 @@ import { useState } from "react";
 import { RefreshCcw } from "lucide-react";
 import { KPICards } from "../components/KPICards";
 import { VotosCandidatoChart } from "../components/VotosCandidatoChart";
-import { InconsistenciasTable } from "../components/InconsistenciasTable";
 import { RRVvsOficialChart } from "../components/RRVvsOficialChart";
 import { GeograficoPanel } from "../components/GeograficoPanel";
 import { TecnicoPanel } from "../components/TecnicoPanel";
@@ -68,9 +67,6 @@ export const DashboardPage = () => {
 
                 {/* Eventos RRV full width */}
                 <EventosRRVPanel />
-
-                {/* Inconsistencias full width */}
-                <InconsistenciasTable />
             </div>
         </div>
     );

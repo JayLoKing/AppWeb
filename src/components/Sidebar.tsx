@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Sun, Moon, User, LogOut, ChevronLeft, ChevronRight, LayoutDashboard, ScanLine } from "lucide-react";
+import { Sun, Moon, User, LogOut, ChevronLeft, ChevronRight, LayoutDashboard, ScanLine, AlertTriangle, FileStack } from "lucide-react";
 import { useAuthStore } from "../features/auth/hooks/useAuthStore";
 import { useDarkMode } from "../hooks/useDarkMode";
 import clsx from "clsx";
@@ -62,8 +62,8 @@ export const Sidebar = () => {
                     )}
                 </NavLink>
 
-                <NavLink 
-                    to="/scanner" 
+                <NavLink
+                    to="/scanner"
                     className={({ isActive }) => clsx(
                         "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group relative",
                         isActive ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium" : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
@@ -74,6 +74,38 @@ export const Sidebar = () => {
                     {collapsed && (
                         <div className="absolute left-full ml-4 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
                             Escanear Acta
+                        </div>
+                    )}
+                </NavLink>
+
+                <NavLink
+                    to="/inconsistencias"
+                    className={({ isActive }) => clsx(
+                        "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group relative",
+                        isActive ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium" : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
+                    )}
+                >
+                    <AlertTriangle size={20} className="shrink-0" />
+                    {!collapsed && <span>Inconsistencias</span>}
+                    {collapsed && (
+                        <div className="absolute left-full ml-4 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
+                            Inconsistencias
+                        </div>
+                    )}
+                </NavLink>
+
+                <NavLink
+                    to="/actas"
+                    className={({ isActive }) => clsx(
+                        "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group relative",
+                        isActive ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium" : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
+                    )}
+                >
+                    <FileStack size={20} className="shrink-0" />
+                    {!collapsed && <span>Actas</span>}
+                    {collapsed && (
+                        <div className="absolute left-full ml-4 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
+                            Actas
                         </div>
                     )}
                 </NavLink>

@@ -4,6 +4,8 @@ import { LoginPage } from "../features/auth/views/LoginPage";
 import { MainLayout } from "../layouts/MainLayout";
 import { DashboardPage } from "../features/dashboard/views/DashboardPage";
 import { ScannerPage } from "../features/scanner/views/ScannerPage";
+import InconsistenciasPage from "../features/comparacion/views/InconsistenciasPage";
+import ActasPage from "../features/actas/views/ActasPage";
 
 export const routesConfig = [
     {
@@ -17,11 +19,6 @@ export const routesConfig = [
             { path: "login", element: <LoginPage /> },
         ],
     },
-    // Ruta pública e independiente del MainLayout
-    {
-        path: "/scanner",
-        element: <ScannerPage />,
-    },
     {
         element: <PrivateRoutes />,
         children: [
@@ -30,6 +27,9 @@ export const routesConfig = [
                 element: <MainLayout />,
                 children: [
                     { path: "dashboard", element: <DashboardPage /> },
+                    { path: "scanner", element: <ScannerPage /> },
+                    { path: "inconsistencias", element: <InconsistenciasPage /> },
+                    { path: "actas", element: <ActasPage /> },
                 ],
             },
         ],

@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { Camera, Upload, FilePlus2, CheckCircle2, AlertTriangle, Loader2, ScanLine, LogIn } from "lucide-react";
+import { Camera, Upload, FilePlus2, CheckCircle2, AlertTriangle, Loader2, ScanLine } from "lucide-react";
 import { CameraCapture } from "../components/CameraCapture";
 import { FileDropzone } from "../components/FileDropzone";
 import { ActaForm } from "../components/ActaForm";
 import { scannerService } from "../services/scannerService";
 import { type ActaPayload, ocrToActa } from "../models/acta";
-import { useAuthStore } from "../../auth/hooks/useAuthStore";
 
 type Mode = "camera" | "upload" | "manual";
 
@@ -89,39 +87,10 @@ export const ScannerPage = () => {
     };
 
     const showForm = Boolean(flow.extracted || flow.ocrError);
-    const { isAuthenticated } = useAuthStore();
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-            {/* Top bar (sustituye al MainLayout) */}
-            <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
-                <div className="max-w-5xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
-                    <Link to="/" className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                            CE
-                        </div>
-                        <span className="font-semibold text-gray-900 dark:text-white text-sm">Cómputo Electoral</span>
-                    </Link>
-                    {isAuthenticated ? (
-                        <Link
-                            to="/dashboard"
-                            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                        >
-                            Ir al dashboard
-                        </Link>
-                    ) : (
-                        <Link
-                            to="/auth/login"
-                            className="flex items-center gap-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg"
-                        >
-                            <LogIn size={16} /> Ingresar
-                        </Link>
-                    )}
-                </div>
-            </nav>
-
-            <div className="p-6 md:p-8">
-                <div className="max-w-5xl mx-auto space-y-6">
+        <div className="p-6 md:p-8">
+            <div className="max-w-5xl mx-auto space-y-6">
                     <header className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -243,7 +212,6 @@ export const ScannerPage = () => {
                         </div>
                     </div>
                 )}
-                </div>
             </div>
         </div>
     );
