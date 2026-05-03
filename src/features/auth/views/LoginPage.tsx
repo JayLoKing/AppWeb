@@ -18,10 +18,11 @@ export const LoginPage = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await authService.login({
+            const { call } = authService.login({
                 usuario: username,
                 contrasena: password,
             });
+            const { data: response } = await call;
             setAuthUser({ response, username });
             navigate("/dashboard");
         } catch (err) {

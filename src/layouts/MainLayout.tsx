@@ -76,18 +76,6 @@ export const MainLayout = () => {
                     <LayoutDashboard size={22} />
                     <span className="text-[10px] font-medium">Dashboard</span>
                 </NavLink>
-
-                <NavLink
-                    to="/scanner"
-                    className={({ isActive }) => clsx(
-                        "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors",
-                        isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                    )}
-                >
-                    <ScanLine size={22} />
-                    <span className="text-[10px] font-medium">Escanear</span>
-                </NavLink>
-
                 <NavLink
                     to="/inconsistencias"
                     className={({ isActive }) => clsx(
@@ -99,7 +87,7 @@ export const MainLayout = () => {
                     <span className="text-[10px] font-medium">Inconsist.</span>
                 </NavLink>
 
-                <NavLink
+                {/* <NavLink
                     to="/actas"
                     className={({ isActive }) => clsx(
                         "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors",
@@ -108,7 +96,7 @@ export const MainLayout = () => {
                 >
                     <FileStack size={22} />
                     <span className="text-[10px] font-medium">Actas</span>
-                </NavLink>
+                </NavLink> */}
             </nav>
         </div>
     );

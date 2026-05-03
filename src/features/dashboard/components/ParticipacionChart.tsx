@@ -1,55 +1,60 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import type { DashboardFilters } from "./FiltersBar";
 
-export const ParticipacionChart = () => {
+const COLORS = ["#10b981", "#ef4444", "#94a3b8"];
+
+interface Props {
+    filters?: DashboardFilters;
+}
+
+export const ParticipacionChart = ({ filters }: Props = {}) => {
+    const f = filters ?? { departamento: "", municipio: "", provincia: "", recinto: "", mesa: "" };
     const { data, isLoading } = useQuery({
-        queryKey: ["participacion"],
-        queryFn: () => dashboardService.getParticipacion(),
+        queryKey: ["participacion", f.departamento, f.municipio, f.provincia, f.recinto, f.mesa],
+        queryFn: async () => {
+            const { call } = dashboardService.getResultados(f);
+            const { data } = await call;
+            return data;
+        },
     });
 
     if (isLoading)
         return <div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />;
     if (!data) return null;
 
+    const desglose = data.desglose ?? [];
+    const validos = desglose.reduce((a, b) => a + (b.votosValidos ?? 0), 0);
+    const nulos = desglose.reduce((a, b) => a + (b.votosNulos ?? 0), 0);
+    const blanco = desglose.reduce((a, b) => a + (b.votosBlanco ?? 0), 0);
+    const total = validos + nulos + blanco;
+
+    const pie = [
+        { name: "Válidos", value: validos },
+        { name: "Nulos", value: nulos },
+        { name: "Blanco", value: blanco },
+    ];
+
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow h-96 flex flex-col">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Participación electoral</h3>
-            {!data.available ? (
-                <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm text-gray-500 dark:text-gray-400">
-                    {data.message ?? "Datos de participación no disponibles."}
-                </div>
-            ) : (
-                <div className="flex-1 min-h-0">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                            data={data.labels.map((label, i) => ({
-                                label,
-                                "Participación %": Number(data.datasets[0]?.data[i] ?? 0),
-                            }))}
-                            margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                            <XAxis dataKey="label" stroke="#6b7280" fontSize={12} />
-                            <YAxis stroke="#6b7280" fontSize={12} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-                            <Tooltip
-                                cursor={{ fill: "rgba(59, 130, 246, 0.08)" }}
-                                contentStyle={{ backgroundColor: "#1F2937", borderColor: "#374151", color: "#fff", borderRadius: 8 }}
-                                itemStyle={{ color: "#E5E7EB" }}
-                                formatter={(value) => `${value}%`}
-                            />
-                            <Legend />
-                            <Bar
-                                dataKey="Participación %"
-                                fill="#3b82f6"
-                                radius={[6, 6, 0, 0]}
-                                isAnimationActive
-                                animationDuration={900}
-                            />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-            )}
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Participación electoral</h3>
+            <p className="text-[11px] text-gray-400 mb-2">
+                Total emitidos: {total.toLocaleString("es-BO")} · Válidos {validos.toLocaleString("es-BO")} · Nulos {nulos.toLocaleString("es-BO")} · Blanco {blanco.toLocaleString("es-BO")}
+            </p>
+            <div className="flex-1 min-h-0">
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie data={pie} dataKey="value" nameKey="name" outerRadius={100} label={(e) => `${e.name}: ${Number(e.value).toLocaleString("es-BO")}`}>
+                            {pie.map((_, i) => (
+                                <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip formatter={(v) => Number(v).toLocaleString("es-BO")} />
+                        <Legend />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 };

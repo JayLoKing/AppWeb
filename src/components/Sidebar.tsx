@@ -23,7 +23,7 @@ export const Sidebar = () => {
             collapsed ? "w-20" : "w-64"
         )}>
             {/* Toggle Button for Desktop */}
-            <button 
+            <button
                 onClick={() => setCollapsed(!collapsed)}
                 className="absolute -right-3 top-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full p-1 text-gray-500 hover:text-blue-600 shadow-sm"
             >
@@ -46,8 +46,8 @@ export const Sidebar = () => {
 
             {/* Navigation */}
             <nav className="flex-1 px-4 space-y-2 mt-4">
-                <NavLink 
-                    to="/dashboard" 
+                <NavLink
+                    to="/dashboard"
                     className={({ isActive }) => clsx(
                         "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group relative",
                         isActive ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium" : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
@@ -61,23 +61,6 @@ export const Sidebar = () => {
                         </div>
                     )}
                 </NavLink>
-
-                <NavLink
-                    to="/scanner"
-                    className={({ isActive }) => clsx(
-                        "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group relative",
-                        isActive ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium" : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
-                    )}
-                >
-                    <ScanLine size={20} className="shrink-0" />
-                    {!collapsed && <span>Escanear Acta</span>}
-                    {collapsed && (
-                        <div className="absolute left-full ml-4 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
-                            Escanear Acta
-                        </div>
-                    )}
-                </NavLink>
-
                 <NavLink
                     to="/inconsistencias"
                     className={({ isActive }) => clsx(
@@ -94,7 +77,7 @@ export const Sidebar = () => {
                     )}
                 </NavLink>
 
-                <NavLink
+                {/* <NavLink
                     to="/actas"
                     className={({ isActive }) => clsx(
                         "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group relative",
@@ -108,14 +91,14 @@ export const Sidebar = () => {
                             Actas
                         </div>
                     )}
-                </NavLink>
+                </NavLink> */}
             </nav>
 
             {/* Footer / Actions */}
             <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-4">
                 {/* Theme Toggle */}
-                <button 
-                    onClick={toggleDark} 
+                <button
+                    onClick={toggleDark}
                     className={clsx(
                         "flex items-center gap-3 px-3 py-2 w-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors group relative",
                         collapsed && "justify-center"
@@ -132,8 +115,8 @@ export const Sidebar = () => {
 
                 {/* User Profile */}
                 <div className="relative">
-                    <button 
-                        onClick={() => setMenuOpen(!menuOpen)} 
+                    <button
+                        onClick={() => setMenuOpen(!menuOpen)}
                         className={clsx(
                             "flex items-center gap-3 px-3 py-2 w-full hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors group relative",
                             collapsed && "justify-center"

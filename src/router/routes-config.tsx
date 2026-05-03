@@ -3,9 +3,9 @@ import { PrivateRoutes } from "./private-routes";
 import { LoginPage } from "../features/auth/views/LoginPage";
 import { MainLayout } from "../layouts/MainLayout";
 import { DashboardPage } from "../features/dashboard/views/DashboardPage";
-import { ScannerPage } from "../features/scanner/views/ScannerPage";
 import InconsistenciasPage from "../features/comparacion/views/InconsistenciasPage";
 import ActasPage from "../features/actas/views/ActasPage";
+import ActaFormPage from "../features/actas/views/ActaFormPage";
 
 export const routesConfig = [
     {
@@ -27,9 +27,10 @@ export const routesConfig = [
                 element: <MainLayout />,
                 children: [
                     { path: "dashboard", element: <DashboardPage /> },
-                    { path: "scanner", element: <ScannerPage /> },
                     { path: "inconsistencias", element: <InconsistenciasPage /> },
-                    { path: "actas", element: <ActasPage /> },
+                    // { path: "actas", element: <ActasPage /> },
+                    // { path: "actas/nueva", element: <ActaFormPage /> },
+                    // { path: "actas/editar/:id", element: <ActaFormPage /> },
                 ],
             },
         ],

@@ -1,4 +1,4 @@
-import type { ComparacionListParams } from "../services/comparacionService";
+import type { ComparacionListParams } from "../models/request/comparacion-list-request";
 import { DEPARTAMENTOS, getMunicipiosByDepartamento } from "../data/territorios";
 
 const ESTADOS = ["", "CONSISTENTE", "INCONSISTENTE", "SOLO_RRV", "SOLO_OFICIAL"] as const;

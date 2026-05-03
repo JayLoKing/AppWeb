@@ -1,29 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { dashboardService, type ResumenComparacion } from "../services/dashboardService";
+import { dashboardService } from "../services/dashboardService";
 
-type CardConfig = {
-    key: keyof ResumenComparacion;
-    label: string;
-    color: string;
-    valueColor: string;
-    format?: "pct" | "num";
-};
-
-const CARDS: CardConfig[] = [
-    { key: "total_actas_rrv", label: "Total Actas RRV", color: "border-orange-500", valueColor: "text-orange-500" },
-    { key: "total_actas_oficial", label: "Total Actas Oficial", color: "border-blue-500", valueColor: "text-blue-500" },
-    { key: "actas_consistentes", label: "Consistentes", color: "border-green-500", valueColor: "text-green-500" },
-    { key: "actas_inconsistentes", label: "Inconsistentes", color: "border-red-500", valueColor: "text-red-500" },
-    { key: "actas_solo_rrv", label: "Solo RRV", color: "border-orange-500", valueColor: "text-orange-500" },
-    { key: "actas_solo_oficial", label: "Solo Oficial", color: "border-slate-400", valueColor: "text-slate-500" },
-    { key: "confiabilidad_rrv", label: "Confiabilidad RRV (%)", color: "border-gray-900", valueColor: "text-gray-900 dark:text-white", format: "pct" },
-    { key: "diferencia_total_votos", label: "Diferencia Total Votos", color: "border-purple-500", valueColor: "text-purple-500" },
-];
+const fmtNum = (n?: number) => (n == null ? "—" : Number(n).toLocaleString("es-BO"));
+const fmtPct = (n?: number) => (n == null ? "—" : `${Number(n).toFixed(1)}%`);
 
 export const KPICards = () => {
     const { data, isLoading, isError } = useQuery({
         queryKey: ["kpis"],
-        queryFn: () => dashboardService.getKPIs(),
+        queryFn: async () => {
+            const { call } = dashboardService.getKPIs();
+            const { data } = await call;
+            return data;
+        },
     });
 
     if (isLoading)
@@ -38,25 +26,28 @@ export const KPICards = () => {
     if (isError || !data)
         return <div className="text-red-500 p-4 bg-red-50 rounded-xl">Error cargando KPIs</div>;
 
-    const fmt = (raw: number | undefined, format?: "pct" | "num") => {
-        if (raw == null) return "—";
-        if (format === "pct") return `${Number(raw).toFixed(1)}%`;
-        return Number(raw).toLocaleString("es-BO");
-    };
+    const cards = [
+        { label: "Total Actas", value: fmtNum(data.totalActas), color: "border-blue-500", textColor: "text-blue-500" },
+        { label: "Transcritas", value: fmtNum(data.actasTranscritas), color: "border-green-500", textColor: "text-green-500" },
+        { label: "Observadas", value: fmtNum(data.actasObservadas), color: "border-amber-500", textColor: "text-amber-500" },
+        { label: "Pendientes", value: fmtNum(data.actasPendientes), color: "border-slate-400", textColor: "text-slate-500" },
+        { label: "% Procesadas", value: fmtPct(data.porcentajePublicadas), color: "border-indigo-500", textColor: "text-indigo-500" },
+        { label: "Votos Válidos", value: fmtNum(data.votosValidos), color: "border-purple-500", textColor: "text-purple-500" },
+        { label: "Ganador", value: `${data.ganador?.candidato ?? "—"} (${fmtPct(data.ganador?.porcentaje)})`, color: "border-emerald-600", textColor: "text-emerald-600" },
+        { label: "Margen Victoria", value: fmtPct(data.margenVictoria), color: "border-red-500", textColor: "text-red-500" },
+    ];
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
-            {CARDS.map(({ key, label, color, valueColor, format }) => (
+            {cards.map((c) => (
                 <div
-                    key={key}
-                    className={`bg-white dark:bg-gray-800 rounded-xl px-5 py-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-l-4 ${color} border-y border-r border-gray-200 dark:border-gray-700 cursor-default`}
+                    key={c.label}
+                    className={`bg-white dark:bg-gray-800 rounded-xl px-5 py-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-l-4 ${c.color} border-y border-r border-gray-200 dark:border-gray-700 cursor-default`}
                 >
                     <div className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
-                        {label}
+                        {c.label}
                     </div>
-                    <div className={`text-3xl font-extrabold ${valueColor}`}>
-                        {fmt(data[key] as number, format)}
-                    </div>
+                    <div className={`text-2xl font-extrabold ${c.textColor}`}>{c.value}</div>
                 </div>
             ))}
         </div>

@@ -1,148 +1,77 @@
 import { httpClient } from "../../../config/axios";
+import { loadAbort } from "../../../config/load-abort";
+import type { UseApiCall } from "../../../config/useApicall";
+import { DashboardPath } from "../path-services/dashboard-path-service";
 
-// ─── Tipos del backend (Go) ────────────────────────────────────────────────
+import type { KpisResponse } from "../models/response/kpis-response";
+import type { ResultadosResponse } from "../models/response/resultados-response";
+import type { GeograficoResponse } from "../models/response/geografico-response";
+import type { HeatmapResponse, HeatmapMetric } from "../models/response/heatmap-response";
+import type { AnomaliasResponse } from "../models/response/anomalias-response";
+import type { GeoFilters, GeoNivel } from "../models/request/geografico-request";
+import type { FiltroItem } from "../models/response/filtros-response";
 
-export interface ResumenComparacion {
-    fecha_comparacion: string;
-    total_actas_rrv: number;
-    total_actas_oficial: number;
-    total_actas_comparadas: number;
-    actas_consistentes: number;
-    actas_inconsistentes: number;
-    actas_solo_rrv: number;
-    actas_solo_oficial: number;
-    confiabilidad_rrv: number;
-    diferencia_total_votos: number;
-}
+export type { GeoFilters };
 
-export interface ChartDataset<T = number> {
-    label: string;
-    data: T[];
-    backgroundColor?: string | string[];
-}
-export interface ChartPayload {
-    labels: string[];
-    datasets: ChartDataset[];
-    raw?: Record<string, number>;
-}
-
-export interface ActaComparada {
-    acta_id: string;
-    departamento: string;
-    municipio: string;
-    recinto: string;
-    mesa: string;
-    estado_comparacion: "CONSISTENTE" | "INCONSISTENTE" | "SOLO_RRV" | "SOLO_OFICIAL";
-    diferencias?: {
-        diferencia_total_votos: number;
+const get = <T>(url: string, params?: Record<string, unknown>): UseApiCall<T> => {
+    const controller = loadAbort();
+    return {
+        call: httpClient.get<T>(url, { params, signal: controller.signal }),
+        controller,
     };
-    inconsistencias?: { severidad?: "ALTA" | "MEDIA" | "BAJA" }[];
-}
+};
 
-export interface InconsistenciasResponse {
-    resumen: ResumenComparacion;
-    inconsistencias: ActaComparada[];
-    total: number;
-}
-
-export interface GeoItem {
-    nombre: string;
-    total_actas: number;
-    consistentes: number;
-    inconsistentes: number;
-    solo_rrv: number;
-    solo_oficial: number;
-    diferencia_total_votos: number;
-}
-export interface GeograficoResponse {
-    group_by: string;
-    total: number;
-    items: GeoItem[];
-}
-
-export interface TecnicoResponse {
-    timestamp: string;
-    latencia_ms: number | null;
-    throughput_actas_min: number | null;
-    disponibilidad: string;
-    seguridad: { jwt_required: boolean; https_requerido: boolean };
-    fuentes: {
-        mongodb: { estado: string; total_actas: number; coleccion: string };
-        postgresql: { estado: string; total_actas: number; tabla: string };
-    };
-    modulo_comparacion: { cqrs_mode: string; modifica_datos: boolean; version: string };
-}
-
-export interface ParticipacionResponse {
-    available: boolean;
-    message?: string;
-    labels: string[];
-    datasets: ChartDataset<number>[];
-    raw?: { total_habilitados: number; total_votos: number };
-}
-
-export interface ResultadosOficialesResponse {
-    resumen?: {
-        totalActas?: number;
-        actasTranscritas?: number;
-        actasObservadas?: number;
-    };
-    comparativa?: { candidato: string; votos: number }[];
-    porDepartamento?: { ubicacion: string; totalActas: number; votosValidos: number }[];
-}
-
-export interface AuditoriaOficialResponse {
-    total?: number;
-    actas?: {
-        id?: string | number;
-        codigoActa: string;
-        estado: string;
-        observaciones?: string;
-    }[];
-}
-
-export interface EventosRRVResponse {
-    total_eventos?: number;
-    coleccion?: string;
-    eventos?: {
-        tipo_evento: string;
-        acta_id?: string;
-        fecha_evento?: string;
-    }[];
-}
-
-// ─── Llamadas reales (devuelven el payload tal cual viene del backend) ────
+const cleanGeo = (f: GeoFilters = {}) => ({
+    departamento: f.departamento || undefined,
+    municipio: f.municipio || undefined,
+    provincia: f.provincia || undefined,
+    recinto: f.recinto || undefined,
+    mesa: f.mesa || undefined,
+});
 
 export const dashboardService = {
-    getKPIs: (): Promise<ResumenComparacion> =>
-        httpClient.get<ResumenComparacion>("/dashboard/kpis").then((r) => r.data),
+    getKPIs: () => get<KpisResponse>(DashboardPath.KPIS),
 
-    getRRVvsOficial: (): Promise<ChartPayload> =>
-        httpClient.get<ChartPayload>("/dashboard/rrv-vs-oficial").then((r) => r.data),
+    getResultados: (f?: GeoFilters) =>
+        get<ResultadosResponse>(DashboardPath.RESULTADOS, cleanGeo(f)),
 
-    getVotosCandidato: (): Promise<ChartPayload> =>
-        httpClient.get<ChartPayload>("/dashboard/votos-candidato").then((r) => r.data),
+    getGeografico: (nivel: GeoNivel, f?: GeoFilters) =>
+        get<GeograficoResponse>(DashboardPath.GEOGRAFICO, {
+            nivel,
+            departamento: f?.departamento || undefined,
+            municipio: f?.municipio || undefined,
+            provincia: f?.provincia || undefined,
+        }),
 
-    getParticipacion: (): Promise<ParticipacionResponse> =>
-        httpClient.get<ParticipacionResponse>("/dashboard/participacion").then((r) => r.data),
+    getHeatmap: (metric: HeatmapMetric = "ganador", nivel: string = "departamento") =>
+        get<HeatmapResponse>(DashboardPath.HEATMAP, { metric, nivel }),
 
-    getGeografico: (groupBy: "departamento" | "municipio" | "recinto" = "departamento"): Promise<GeograficoResponse> =>
-        httpClient
-            .get<GeograficoResponse>("/dashboard/geografico", { params: { group_by: groupBy } })
-            .then((r) => r.data),
+    getAnomalias: () => get<AnomaliasResponse>(DashboardPath.ANOMALIAS),
 
-    getTecnico: (): Promise<TecnicoResponse> =>
-        httpClient.get<TecnicoResponse>("/dashboard/tecnico").then((r) => r.data),
+    getAuditoria: () => get<{ total: number; actas: unknown[] }>(DashboardPath.AUDITORIA),
 
-    getInconsistencias: (): Promise<InconsistenciasResponse> =>
-        httpClient.get<InconsistenciasResponse>("/dashboard/inconsistencias").then((r) => r.data),
+    getDepartamentos: () => get<FiltroItem[]>(DashboardPath.FILTRO_DEPARTAMENTOS),
 
-    getEventosRRV: (): Promise<EventosRRVResponse> =>
-        httpClient.get<EventosRRVResponse>("/dashboard/eventos-rrv").then((r) => r.data),
+    getMunicipios: (departamento?: string) =>
+        get<FiltroItem[]>(DashboardPath.FILTRO_MUNICIPIOS, {
+            departamento: departamento || undefined,
+        }),
 
-    getResultadosOficiales: (): Promise<ResultadosOficialesResponse> =>
-        httpClient.get<ResultadosOficialesResponse>("/resultados").then((r) => r.data),
+    getProvincias: (departamento?: string, municipio?: string) =>
+        get<FiltroItem[]>(DashboardPath.FILTRO_PROVINCIAS, {
+            departamento: departamento || undefined,
+            municipio: municipio || undefined,
+        }),
 
-    getAuditoriaOficial: (): Promise<AuditoriaOficialResponse> =>
-        httpClient.get<AuditoriaOficialResponse>("/auditoria").then((r) => r.data),
+    getRecintos: (params: { departamento?: string; municipio?: string; provincia?: string } = {}) =>
+        get<FiltroItem[]>(DashboardPath.FILTRO_RECINTOS, {
+            departamento: params.departamento || undefined,
+            municipio: params.municipio || undefined,
+            provincia: params.provincia || undefined,
+        }),
+
+    getMesas: (recinto?: string) =>
+        get<FiltroItem[]>(DashboardPath.FILTRO_MESAS, {
+            recinto: recinto || undefined,
+        }),
 };

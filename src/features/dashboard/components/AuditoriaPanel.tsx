@@ -1,22 +1,33 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/dashboardService";
 
-export const AuditoriaOficialPanel = () => {
+interface ActaObservada {
+    id?: number;
+    codigoActa?: number;
+    estado?: string;
+    observaciones?: string;
+}
+
+export const AuditoriaPanel = () => {
     const { data, isLoading } = useQuery({
         queryKey: ["auditoriaOficial"],
-        queryFn: () => dashboardService.getAuditoriaOficial(),
+        queryFn: async () => {
+            const { call } = dashboardService.getAuditoria();
+            const { data } = await call;
+            return data as { total: number; actas: ActaObservada[] };
+        },
     });
 
     if (isLoading)
         return <div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />;
 
-    const actas = data?.actas ?? [];
+    const actas: ActaObservada[] = data?.actas ?? [];
     const total = data?.total ?? actas.length;
 
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">
-                Auditoría oficial
+                Auditoría / Trazabilidad oficial
             </h3>
 
             <div className="flex items-baseline gap-2 mb-4">
@@ -37,7 +48,7 @@ export const AuditoriaOficialPanel = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {actas.slice(0, 5).map((acta, i) => (
+                            {actas.slice(0, 8).map((acta, i) => (
                                 <tr
                                     key={acta.id ?? acta.codigoActa ?? i}
                                     className="border-t border-gray-100 dark:border-gray-700"
