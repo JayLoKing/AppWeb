@@ -4,8 +4,7 @@ import { LoginPage } from "../features/auth/views/LoginPage";
 import { MainLayout } from "../layouts/MainLayout";
 import { DashboardPage } from "../features/dashboard/views/DashboardPage";
 import InconsistenciasPage from "../features/comparacion/views/InconsistenciasPage";
-import ActasPage from "../features/actas/views/ActasPage";
-import ActaFormPage from "../features/actas/views/ActaFormPage";
+
 
 export const routesConfig = [
     {

@@ -3,7 +3,6 @@ import { loadAbort } from "../../../config/load-abort";
 import type { UseApiCall } from "../../../config/useApicall";
 import { ActasPath } from "../path-services/actas-path-service";
 import type { Acta } from "../models/response/acta-response";
-import type { SimulacionResponse } from "../models/response/simulacion-response";
 import type { ResumenActasResponse } from "../models/response/resumen-actas-response";
 import type { ActasListParams } from "../models/request/actas-list-request";
 import type { ActaCreateRequest } from "../models/request/acta-create-request";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
-import { LayoutDashboard, ScanLine, AlertTriangle, FileStack, User, LogOut, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, AlertTriangle, User, LogOut, Sun, Moon } from "lucide-react";
 import { useAuthStore } from "../features/auth/hooks/useAuthStore";
 import { useDarkMode } from "../hooks/useDarkMode";
 import clsx from "clsx";
