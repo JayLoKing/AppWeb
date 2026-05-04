@@ -10,6 +10,16 @@ import { AnomaliasPanel } from "../components/AnomaliasPanel";
 import { AuditoriaPanel } from "../components/AuditoriaPanel";
 import { VelocidadPanel } from "../components/VelocidadPanel";
 import { FiltersBar, type DashboardFilters } from "../components/FiltersBar";
+import { ComparacionKPIs } from "../components/ComparacionKPIs";
+import { ComparacionVotosCandidato } from "../components/ComparacionVotosCandidato";
+import { ComparacionGeografica } from "../components/ComparacionGeografica";
+import { HeatmapComparativoPanel } from "../components/HeatmapComparativoPanel";
+import { TransparenciaPanel } from "../components/TransparenciaPanel";
+import { TrazabilidadPanel } from "../components/TrazabilidadPanel";
+import { TecnicoPanel } from "../components/TecnicoPanel";
+import { AnomaliasRRVPanel } from "../components/AnomaliasRRVPanel";
+import { LogsInconsistenciasPanel } from "../components/LogsInconsistenciasPanel";
+import { ParticipacionComparativa } from "../components/ParticipacionComparativa";
 
 const DEFAULT_FILTERS: DashboardFilters = {
     departamento: "",
@@ -38,7 +48,7 @@ export const DashboardPage = () => {
                 <div className="flex items-center gap-3">
                     <div className="flex-1">
                         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                            Dashboard Electoral — Cómputo Oficial (SRV)
+                            Dashboard Electoral — RRV + Cómputo Oficial
                         </h1>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                             Actualizado: {lastUpdate}
@@ -57,22 +67,42 @@ export const DashboardPage = () => {
 
                 <KPICards />
 
+                <ComparacionKPIs />
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <VotosCandidatoChart filters={filters} />
                     <ParticipacionChart filters={filters} />
                 </div>
+
+                <ComparacionVotosCandidato />
+
+                <ParticipacionComparativa />
+
+                <HeatmapComparativoPanel />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <HeatmapPanel />
                     <VelocidadPanel />
                 </div>
 
+                <ComparacionGeografica />
+
                 <GeograficoPanel filters={filters} />
+
+                <TransparenciaPanel />
+
+                <TrazabilidadPanel />
+
+                <TecnicoPanel />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <AnomaliasPanel />
-                    <AuditoriaPanel />
+                    <AnomaliasRRVPanel />
                 </div>
+
+                <LogsInconsistenciasPanel />
+
+                <AuditoriaPanel />
             </div>
         </div>
     );
