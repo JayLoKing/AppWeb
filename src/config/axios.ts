@@ -4,7 +4,7 @@ import { useAuthStore } from "../features/auth/hooks/useAuthStore";
 
 const baseURL: string =
     (import.meta.env.VITE_API_URL as string | undefined) ??
-    "http://localhost:8080/api/v1";
+    "http://localhost:8090/api/v1";
 
 const createAxiosInstance = (): AxiosInstance => {
     return axios.create({ baseURL });
