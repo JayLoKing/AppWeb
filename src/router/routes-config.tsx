@@ -4,6 +4,7 @@ import { LoginPage } from "../features/auth/views/LoginPage";
 import { MainLayout } from "../layouts/MainLayout";
 import { DashboardPage } from "../features/dashboard/views/DashboardPage";
 import InconsistenciasPage from "../features/comparacion/views/InconsistenciasPage";
+import SMSPage from "../features/sms/views/SMSPage";
 
 
 export const routesConfig = [
@@ -27,9 +28,7 @@ export const routesConfig = [
                 children: [
                     { path: "dashboard", element: <DashboardPage /> },
                     { path: "inconsistencias", element: <InconsistenciasPage /> },
-                    // { path: "actas", element: <ActasPage /> },
-                    // { path: "actas/nueva", element: <ActaFormPage /> },
-                    // { path: "actas/editar/:id", element: <ActaFormPage /> },
+                    { path: "sms", element: <SMSPage /> },
                 ],
             },
         ],

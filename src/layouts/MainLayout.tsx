@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
-import { LayoutDashboard, AlertTriangle, User, LogOut, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, AlertTriangle, MessageSquare, User, LogOut, Sun, Moon } from "lucide-react";
 import { useAuthStore } from "../features/auth/hooks/useAuthStore";
 import { useDarkMode } from "../hooks/useDarkMode";
 import clsx from "clsx";
@@ -85,6 +85,16 @@ export const MainLayout = () => {
                 >
                     <AlertTriangle size={22} />
                     <span className="text-[10px] font-medium">Inconsist.</span>
+                </NavLink>
+                <NavLink
+                    to="/sms"
+                    className={({ isActive }) => clsx(
+                        "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors",
+                        isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                    )}
+                >
+                    <MessageSquare size={22} />
+                    <span className="text-[10px] font-medium">SMS</span>
                 </NavLink>
 
                 {/* <NavLink
